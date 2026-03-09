@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const sorted = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="Blog" description="All blog posts — thoughts, curiosities, and musings.">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h1>The Blog</h1>
+      <p>Thoughts, curiosities, and musings — written when the coffee kicks in.</p>
+    </div>
+    <div class="posts-list">
+      {sorted.map(post => (
+        <PostCard
+          title={post.data.title}
+          description={post.data.description}
+          date={post.data.date}
+          tags={post.data.tags}
+          href={`/blog/${post.slug}`}
+        />
+      ))}
+      {sorted.length === 0 && (
+        <p style="color: var(--text-muted); font-style: italic;">
+          Nothing here yet — check back soon.
+        </p>
+      )}
+    </div>
+  </div>
+</Base>

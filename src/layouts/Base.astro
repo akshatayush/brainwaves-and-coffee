@@ -1,0 +1,65 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import Search from '../components/Search.astro';
+import CoffeeDecorations from '../components/CoffeeDecorations.astro';
+import '../styles/global.css';
+import { getCollection } from 'astro:content';
+
+const [posts, projects] = await Promise.all([
+  getCollection('blog'),
+  getCollection('projects'),
+]);
+const searchItems = [
+  ...posts.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/blog/${p.slug}`, type: 'post' as const })),
+  ...projects.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/projects/${p.slug}`, type: 'project' as const })),
+];
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Brainwaves & Coffee',
+  description = 'A curious person\'s corner of the web — thoughts, projects, and rabbit holes.',
+} = Astro.props;
+
+const fullTitle =
+  title === 'Brainwaves & Coffee' ? title : `${title} — Brainwaves & Coffee`;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{fullTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored ?? (prefersDark ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <CoffeeDecorations />
+    <Nav />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    <Search items={searchItems} />
+  </body>
+</html>

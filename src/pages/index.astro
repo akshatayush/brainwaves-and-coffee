@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const allBlogPosts = await getCollection('blog');
+const allProjects  = await getCollection('projects');
+
+const recentPosts = allBlogPosts
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const recentProjects = allProjects
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 2);
+---
+
+<Base>
+  <div class="hero">
+    <span class="hero-eyebrow">☕</span>
+    <h1 class="hero-title">Brainwaves & Coffee</h1>
+    <p class="hero-tagline">
+      A curious person's corner of the web — thoughts, experiments, and 2am rabbit holes.
+    </p>
+    <div class="hero-divider"></div>
+  </div>
+
+  <div class="home-sections">
+    {recentPosts.length > 0 && (
+      <section>
+        <div class="section-header">
+          <h2>Recent Musings</h2>
+          <a href="/blog" class="view-all">View all →</a>
+        </div>
+        <div class="posts-list">
+          {recentPosts.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date}
+              tags={post.data.tags}
+              href={`/blog/${post.slug}`}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {recentProjects.length > 0 && (
+      <section>
+        <div class="section-header">
+          <h2>Recent Projects</h2>
+          <a href="/projects" class="view-all">View all →</a>
+        </div>
+        <div class="posts-list">
+          {recentProjects.map(project => (
+            <PostCard
+              title={project.data.title}
+              description={project.data.description}
+              date={project.data.date}
+              tags={project.data.tags}
+              href={`/projects/${project.slug}`}
+              link={project.data.link}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
