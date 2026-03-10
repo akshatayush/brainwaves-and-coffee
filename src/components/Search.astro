@@ -77,7 +77,12 @@ const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
     if (!tagMatch) return false;
     if (!query) return true;
     const haystack = (item.title + ' ' + item.description).toLowerCase();
-    return query.toLowerCase().split(/\s+/).filter(Boolean).every(w => haystack.includes(w));
+    const queryWords = query.toLowerCase().split(/\s+/).filter(Boolean);
+    // Use starts-with word boundary check for partial matching
+    return queryWords.every(w => {
+      const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp(`\\b${escaped}`).test(haystack);
+    });
   }
 
   function render() {
@@ -93,7 +98,7 @@ const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
       <a href="${item.href}" class="search-result-item">
         <div class="search-result-meta">
           <span class="search-result-type">${item.type === 'post' ? 'Post' : 'Project'}</span>
-          ${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          ${item.tags.map(t => `<span class="tag" data-search-tag="${t}">${t}</span>`).join('')}
         </div>
         <div class="search-result-title">${item.title}</div>
         <div class="search-result-desc">${item.description}</div>
