@@ -1,43 +1,60 @@
-# Astro Starter Kit: Minimal
+# Brainwaves & Coffee
+
+Brainwaves & Coffee is my personal Astro site for essays, project notes, and coffee-adjacent curiosities. Content is written in MDX, rendered through Astro content collections, and supports rich post features such as optimized images, callouts, code blocks, and KaTeX math.
+
+## Stack
+
+- Astro 6
+- MDX via `@astrojs/mdx`
+- Astro content collections
+- KaTeX with `remark-math` and `rehype-katex`
+
+## Getting Started
+
+Use a recent Node.js LTS release, then install dependencies from the project root:
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Start the local development server:
 
-## 🚀 Project Structure
+```sh
+npm run dev
+```
 
-Inside of your Astro project, you'll see the following folders and files:
+Astro will serve the site at `http://localhost:4321`.
+
+## Project Layout
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+  assets/            Imported images used by posts and components
+  components/        Reusable UI pieces such as cards, nav, and search
+  content/           MDX entries for blog posts and projects
+  layouts/           Shared page shells
+  pages/             Route files for the site
+  styles/            Global site styling
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Blog posts live in `src/content/blog/` and project entries live in `src/content/projects/`. Each entry uses frontmatter such as `title`, `date`, `description`, `tags`, and optional `image` / `heroImage` fields.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Useful Commands
 
-Any static assets, like images, can be placed in the `public/` directory.
+```sh
+npm run dev       # start the local dev server
+npm run build     # create a production build in dist/
+npm run preview   # preview the production build locally
+npm run astro -- check
+```
 
-## 🧞 Commands
+## Writing Content
 
-All commands are run from the root of the project, from a terminal:
+Posts are authored in `.mdx`, so you can use normal Markdown plus Astro-powered components. The current setup supports:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+- links, lists, quotes, tables, and fenced code blocks
+- inline images from `src/assets/`
+- reusable callouts
+- inline and display math with KaTeX
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+For a formatting reference, see the example post in `src/content/blog/how-to-make-a-post.mdx`.
