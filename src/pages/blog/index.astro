@@ -20,7 +20,8 @@ const sorted = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf(
           description={post.data.description}
           date={post.data.date}
           tags={post.data.tags}
-          href={`/blog/${post.slug}`}
+          image={post.data.image}
+          href={`/blog/${post.id}`}
         />
       ))}
       {sorted.length === 0 && (

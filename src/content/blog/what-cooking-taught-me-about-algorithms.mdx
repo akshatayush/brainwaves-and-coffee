@@ -1,0 +1,95 @@
+---
+title: What Cooking Taught Me About Algorithms
+date: 2026-03-05
+description: Making Friendsgiving dinner made it obvious that a kitchen is really a scheduling, dependency, and parallelization problem with better smells.
+tags:
+  - cooking
+  - algorithms
+  - systems
+  - optimization
+image: ../../assets/what-cooking-taught-me-about-algorithms/spices.jpg
+heroImage: ../../assets/what-cooking-taught-me-about-algorithms/spices.jpg
+heroCaption: When several pans are active and the oven clock is glaring at you, abstraction suddenly becomes very practical.
+---
+
+import { Image } from 'astro:assets';
+import Callout from '../../components/Callout.astro';
+import algorithms from '../../assets/what-cooking-taught-me-about-algorithms/algorithms.jpg';
+import spices from '../../assets/what-cooking-taught-me-about-algorithms/spices.jpg';
+
+The first time I cooked a full Friendsgiving meal, I learned that the kitchen does not care how aesthetically pleasing your plan sounds in your head. It cares about timing, heat, contention, and whether you decided to chop onions while three other things were already begging for intervention.
+
+At some point in the chaos, it clicked: this is an algorithms problem.
+
+I remember standing there with potatoes boiling, onions halfway done, something in the oven that definitely needed checking, and the vague but unmistakable feeling that I had built myself a very elegant failure state. Nothing was impossible on its own. The problem was concurrency. Dinner was no longer a list of tasks. It was a live system with dependencies, deadlines, and no sympathy at all for poor scheduling.
+
+## The kitchen is a dependency graph
+
+Mashed potatoes cannot be finished before the water boils. Gravy cannot happen until something has produced drippings or at least a convincing substitute. The oven can only hold so much, and stove burners are a limited shared resource. Once you see the structure, cooking stops being a vague art project and starts looking like scheduling with edible consequences.
+
+That shift in perspective helps immediately. Instead of asking, “What should I cook next?” you begin asking, “What is on the critical path?” A tray of vegetables can roast unattended for a while, so it is a low-attention process. A pan sauce that can split if ignored is not. The real constraint is often not total time. It is attention at the wrong moment.
+
+This is one reason professional kitchens rely so heavily on station logic and sequencing. The work may look improvisational from the dining room, but underneath it is choreography. Good cooks are not merely reacting quickly. They are reducing the number of crises that need reacting to in the first place.
+
+## Mise en place is basically caching
+
+<figure>
+  <Image src={algorithms} alt="An organized cooking workspace suggesting order amid complexity" widths={[720, 960]} sizes="(max-width: 768px) 100vw, 680px" />
+  <figcaption>Once you map the dependencies, dinner becomes less of a panic spiral and more of a plan.</figcaption>
+</figure>
+
+Prepping ingredients before the heat starts is not culinary fussiness. It is reducing latency. If your garlic is peeled, herbs are chopped, butter is portioned, and spices are measured, you are front-loading work so the critical path stays clear later.
+
+The first time I really understood this, it felt almost embarrassingly obvious. Of course the kitchen runs better when the inputs are already prepared. But until you experience the alternative, it is easy to underestimate the cost of context switching. Reaching for the cumin while the onions threaten to burn is not a charming rustic moment. It is simply an avoidable cache miss with consequences.
+
+<Callout type="tip" title="Why prep feels powerful">
+  Mise en place turns a reactive process into a buffered one. You are storing ready-to-use inputs close to where they will be consumed, which is a sentence a cook and a systems engineer can both respect.
+</Callout>
+
+The parallel is not perfect, but it is useful:
+
+$$
+\text{stress} \propto \frac{\text{unprepared decisions}}{\text{time remaining}}
+$$
+
+Scientifically informal, emotionally accurate.
+
+## Parallelization has rules
+
+Some tasks can run at the same time. Rice can steam while vegetables roast. A sauce can reduce while you set the table. But certain pairings create hidden contention. If two dishes both require constant stirring, they are not really parallel. They are just scheduled denial.
+
+This is where cooking gets interesting as a planning problem. Good parallelization is not simply “doing many things.” It is pairing tasks whose attention profiles complement each other. Something long and passive can coexist nicely with something short and active. Two fiddly stove tasks due at the same minute will eventually force a choice, and one of them will make that choice by burning.
+
+There is a reason this feels so legible to anyone who has thought about systems. You are balancing throughput, latency, and contention across limited hardware, except the hardware is an oven, four burners, two hands, and a brain that was probably too optimistic around noon.
+
+```ts
+const dinnerPlan = [
+  { task: 'roast vegetables', blocks: [] },
+  { task: 'boil potatoes', blocks: [] },
+  { task: 'make gravy', blocks: ['stovetop-attention'] },
+  { task: 'finish pasta', blocks: ['stovetop-attention'] },
+];
+```
+
+The moment two tasks both need your full hands and eyes, one of them is lying about being easy.
+
+That line applies suspiciously well outside the kitchen. A lot of work that people call multitasking is really just unresolved contention. The system looks efficient right up until latency spikes and somebody smells smoke.
+
+## The best optimization is often earlier than you think
+
+I used to assume the hard part was “cooking well.” It is important, sure. But the bigger win is sequencing well. If the onions, spices, and utensils are already ready, then the actual cooking becomes calmer and better. The same is true in programming. You can save a lot of suffering by doing setup work before the hot path starts.
+
+That lesson is less glamorous than most people want. We like to imagine expertise reveals itself in dramatic moments, the perfect flip, the clever optimization, the miraculous recovery. More often it appears earlier in the form of prep bowls, cleared counters, labeled ingredients, and a realistic timeline. Competence has terrible marketing, but excellent results.
+
+<figure>
+  <Image src={spices} alt="A row of spices arranged for cooking" widths={[720, 960]} sizes="(max-width: 768px) 100vw, 680px" />
+  <figcaption>Prep work looks humble right up until it saves the whole evening.</figcaption>
+</figure>
+
+## Friendsgiving as a systems lesson
+
+By the end of that meal, I was tired, slightly flour-dusted, and disproportionately proud of a timeline scribbled on paper. Dinner came out on time. Nothing burned. More importantly, I came away convinced that many stressful environments improve the moment you stop treating them as vibes and start treating them as coordination problems.
+
+That may not sound romantic, but then again, neither does “resource contention,” and it still saved the stuffing.
+
+Friendsgiving taught me that good systems thinking is often just kindness toward your future self. Prep before the pressure hits. Respect dependencies. Protect the critical path. Avoid pretending parallelism exists where it clearly does not. It turns out that dinner, like software, goes much better when you stop improvising around bottlenecks and start designing around them.

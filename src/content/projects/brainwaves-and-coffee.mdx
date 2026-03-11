@@ -1,0 +1,93 @@
+---
+title: Brainwaves & Coffee
+date: 2026-03-10
+description: The little publishing system behind this site, built to keep writing pleasant and the presentation sharp.
+tags:
+  - astro
+  - mdx
+  - design
+  - writing
+image: ../../assets/brainwaves-and-coffee/cappuccino-topview.jpg
+heroImage: ../../assets/brainwaves-and-coffee/cappuccino-topview.jpg
+heroCaption: "The site is basically this: a warm surface, a clear routine, and a lot happening under the foam."
+---
+
+import { Image } from 'astro:assets';
+import Callout from '../../components/Callout.astro';
+import cappuccino from '../../assets/brainwaves-and-coffee/cappuccino-topview.jpg';
+
+Brainwaves & Coffee is the publishing system for this site. It is intentionally small, which is different from simplistic. I wanted a place where writing a post feels like opening a notebook, not filing taxes with a syntax highlighter.
+
+This project grew out of a fairly ordinary frustration. I wanted a personal site that felt calm to use and pleasant to maintain, but a lot of publishing setups drift toward one of two extremes. They are either all scaffolding and no warmth, or visually polished but slightly annoying to write in. I wanted something in the middle. A site with enough structure to make posts look considered, but not so much machinery that every new entry feels like launching a product.
+
+<Callout type="tip" title="Design goal">
+  The site tries to make good writing feel inevitable. That means clean cards, fast pages, search, tags, MDX support, math rendering, and just enough flourish to feel alive.
+</Callout>
+
+## What it does
+
+At the core, this project is an Astro site with content collections for `blog` and `projects`. Posts are written in MDX, which means normal markdown still works, but I can also drop in richer components when a post needs more than paragraphs and headings.
+
+That gives me a nice ladder of complexity:
+
+1. Start with plain prose.
+2. Add images when the post needs texture.
+3. Add callouts, tables, code, or math when the idea benefits from structure.
+
+That ladder matters because it keeps the writing workflow honest. Most posts should begin life as text. If the argument is weak, no amount of visual garnish is going to rescue it. But when the content genuinely benefits from a figure, a warning box, a code sample, or a formula, the system is ready. The extra capabilities are there as leverage, not as decoration by default.
+
+That editorial bias is deliberate. Some of the best technical communicators, especially in long-form explainers and video essays, understand that structure matters because it carries the reader from question to answer. The ornament should serve the argument. The site tries to follow the same rule in quieter form.
+
+<figure>
+  <Image src={cappuccino} alt="A cappuccino viewed from above on a warm tabletop" widths={[720, 960]} sizes="(max-width: 768px) 100vw, 680px" />
+  <figcaption>The visual language of the site comes from coffee shop warmth, not tech dashboard sterility.</figcaption>
+</figure>
+
+## Why I built it this way
+
+Most personal sites decay for one of two reasons. Either they are too bare to feel worth tending, or they are so overengineered that publishing a thought starts to feel like coordinating a lunar landing. I wanted the narrow path in the middle.
+
+The content pipeline is the practical part. The interface is the emotional part. A writing space has to feel calm enough that your brain stops negotiating with itself.
+
+That second part is easy to underrate. People talk about tooling as if efficiency were the only thing that mattered, but mood matters too. Friction is not always technical. Sometimes it is aesthetic. A cluttered or generic-looking writing space subtly discourages use. A site with good typography, clear proportions, and a little visual character makes posting feel more inviting. Not because pixels are profound, but because environment shapes behavior.
+
+## The stack in one glance
+
+```bash
+src/
+  content/
+    blog/
+    projects/
+  components/
+    Callout.astro
+    PostCard.astro
+  layouts/
+    Base.astro
+    Post.astro
+```
+
+There is no great mystery here. That is a compliment.
+
+I wanted the architecture to stay legible. If I come back to this six months later, I should be able to understand how a post moves from file to page without reconstructing a temple of abstractions. The best compliment I can pay the stack is that it mostly gets out of the way.
+
+There is a small historical lesson in that too. Systems that endure are often not the ones with the most elaborate theory around them. They are the ones a tired human can still understand on an ordinary Tuesday.
+
+## A useful constraint
+
+The project assumes a very ordinary publishing equation:
+
+$$
+\text{good post experience} = \text{clarity} + \text{speed} + \text{consistency}
+$$
+
+You can debate the coefficients if you like. The point stands.
+
+Speed matters because slow sites feel discourteous. Clarity matters because readers should not need to excavate the structure of a page. Consistency matters because repeated patterns lower cognitive load. Those are not glamorous design principles, but they are the kind that survive contact with real use.
+
+## What I like most
+
+I can open a file, write naturally, import an image from `src/assets`, and publish something that looks considered without needing to manually polish every edge. That matters more than any specific framework choice. Good systems reduce friction at the moment you are most likely to give up.
+
+And if a site about thinking and coffee cannot make posting feel smooth, it would be committing a branding offense.
+
+That is really what this project is trying to protect: continuity between having a thought and being willing to publish it. The more respectful the system is of that fragile moment, the more likely the site stays alive. Everything else is implementation detail, however handsome.

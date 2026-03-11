@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Search from '../components/Search.astro';
 import CoffeeDecorations from '../components/CoffeeDecorations.astro';
 import '../styles/global.css';
+import 'katex/dist/katex.min.css';
 import { getCollection } from 'astro:content';
 
 const [posts, projects] = await Promise.all([

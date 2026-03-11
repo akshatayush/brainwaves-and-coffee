@@ -1,0 +1,144 @@
+---
+title: How to Make a Post
+date: 2026-03-09
+description: A practical guide to writing and publishing on this site, plus a showcase of the formatting tools available in MDX.
+tags:
+  - mdx
+  - guide
+  - publishing
+  - astro
+image: ../../assets/how-to-make-a-post/postbox.jpg
+heroImage: ../../assets/how-to-make-a-post/postbox-hero.jpg
+heroCaption: If the publishing workflow feels like dropping a letter in the post, the system is doing its job.
+---
+
+import { Image } from 'astro:assets';
+import Callout from '../../components/Callout.astro';
+import postbox from '../../assets/how-to-make-a-post/postbox.jpg';
+
+This site uses MDX for posts, which is useful if you like markdown and even more useful if a piece occasionally needs company. You can write plain text, links, lists, quotes, code blocks, tables, math, and richer components without changing the overall workflow.
+
+That matters more than it first appears. Most personal publishing systems fail in one of two directions. They are either so spare that every post feels visually undernourished, or so elaborate that writing begins to resemble paperwork. The aim here is narrower and more humane: keep the path from idea to published page short enough that thought does not cool on the way there.
+
+## The basic workflow
+
+1. Create a new file in `src/content/blog/` or `src/content/projects/`.
+2. Add frontmatter with `title`, `date`, `description`, and optional tags or images.
+3. Write the body in markdown or MDX.
+4. Run `npm run dev` while drafting.
+5. Run `npm run build` before publishing.
+
+In practice, the loop is simple. I usually begin with a title and a blunt one-sentence description, because they force the argument to show its face early. Then I draft the body as plain markdown first. If the post eventually needs an image, a callout, or a little math, I add that later. This is not an ethical stance. It is merely a reliable way to avoid polishing a thought that has not yet learned how to stand.
+
+<Callout type="note" title="File naming">
+  The filename becomes the URL slug. `how-to-make-a-post.mdx` turns into `/blog/how-to-make-a-post`. This is delightfully low drama.
+</Callout>
+
+## Frontmatter example
+
+```mdx
+---
+title: My New Post
+date: 2026-03-09
+description: One clear sentence about the post.
+tags:
+  - writing
+  - notes
+image: ../../assets/my-post/thumbnail.jpg
+heroImage: ../../assets/my-post/hero.jpg
+heroCaption: Optional caption beneath the hero image.
+---
+```
+
+Frontmatter is the small but important ceremony at the top of the file. It tells the site how to list the post, what image to use on the card, what hero image to render when the post opens, and how to summarize the piece elsewhere. A good description is especially useful because it acts as a kind of editorial checksum. If you cannot summarize the post in one sentence, the post may still be searching for its center.
+
+## Normal markdown still works
+
+You can add [links](https://astro.build/), lists, and quotes without thinking about components at all. That is the default mode, and it should remain the default mode most of the time.
+
+> A good publishing system should disappear while you are writing and reappear only when you need leverage.
+
+You can also use checklists for drafting:
+
+- Write the argument.
+- Cut the part that is just throat clearing.
+- Add one image if it genuinely helps.
+- Stop before the post becomes decorative fan fiction about itself.
+
+That last point is hard won. Writing often weakens at the exact moment the author begins admiring the apparatus too much. The reader came for an idea, not for proof that the page owns several tasteful CSS variables.
+
+## Images inside a post
+
+For local still images, import them from `src/assets` and render with `Image` from `astro:assets`. Astro will optimize the files, generate responsive sizes, and generally spare you from serving a giant original image to someone who only wanted to read a post on their phone while standing in line for coffee.
+
+<figure>
+  <Image src={postbox} alt="A red postbox standing on a quiet street" widths={[720, 960]} sizes="(max-width: 768px) 100vw, 680px" />
+  <figcaption>Inline figures work well when you want a caption and optimized image output.</figcaption>
+</figure>
+
+If you need a GIF, place it in `public/` and use normal markdown or HTML:
+
+```md
+![Animated demo](/gifs/demo.gif)
+```
+
+That split is useful to remember. Still images benefit from optimization, responsive sizing, and format conversion. GIFs are their own unruly species and are usually better treated like public assets. Charming, occasionally excessive, and not especially interested in being managed.
+
+## Callouts
+
+Reusable callouts are available as Astro components in MDX:
+
+```mdx
+import Callout from '../../components/Callout.astro';
+
+<Callout type="tip" title="Keep it tidy">
+  Use callouts for side notes, not for every third paragraph.
+</Callout>
+```
+
+<Callout type="tip" title="When to use them">
+  Callouts are best for caveats, shortcuts, and useful warnings. If everything is highlighted, nothing is.
+</Callout>
+
+Callouts work best when they interrupt the flow for a good reason. A shortcut, a warning, a framing note, perhaps a small piece of context that would otherwise slow the main paragraph down. They should feel like margin notes from a thoughtful editor, not like a page that accidentally inhaled a design system.
+
+## Code blocks
+
+Fenced code works out of the box:
+
+```ts
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const sorted = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+```
+
+Inline code like `npm run dev` and `src/content/blog` also renders cleanly. This is especially useful for technical posts, but even non-technical writing benefits from being able to refer to commands, paths, and identifiers without the typography dissolving into soup.
+
+## Math
+
+Inline math works like this: $brew\ ratio = \frac{coffee}{water}$.
+
+Display math works too:
+
+$$
+\text{extraction yield} \approx \frac{\text{dissolved solids}}{\text{dry coffee dose}}
+$$
+
+It is a writing site, not a physics journal, but it is useful to have the option when an idea is easier to express with symbols than with three apologetic paragraphs. Math support is one of those features you do not need every week, but when you do need it, you really do not want to counterfeit it with screenshots or badly spaced plaintext.
+
+## Tables
+
+| Need | Best tool |
+| --- | --- |
+| Quick post | Plain markdown |
+| Captioned image | `Image` inside a `figure` |
+| Side note | `Callout` |
+| Formula | LaTeX math |
+| Animated GIF | File in `public/` |
+
+## A finished post can stay simple
+
+The point of all this is not to turn every essay into a multimedia tasting menu. Most posts should still just be good sentences in a sensible order. The nice thing about MDX is that you can stay simple by default and become expressive only when the content earns it.
+
+That is really the philosophy of the whole site. The tools are there to help the writing land more precisely, not to distract from it. If a post needs nothing more than a title, a few headings, and strong paragraphs, great. If another post needs images, code, formulas, and callouts, that is also fine. The system should meet the writing where it is, rather than forcing every idea into the same formal clothes.

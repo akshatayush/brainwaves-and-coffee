@@ -20,7 +20,8 @@ const sorted = projects.sort((a, b) => b.data.date.valueOf() - a.data.date.value
           description={project.data.description}
           date={project.data.date}
           tags={project.data.tags}
-          href={`/projects/${project.slug}`}
+          image={project.data.image}
+          href={`/projects/${project.id}`}
           link={project.data.link}
         />
       ))}

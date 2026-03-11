@@ -17,7 +17,7 @@ const recentProjects = allProjects
 
 <Base>
   <div class="hero">
-    <span class="hero-eyebrow">☕</span>
+    <span class="hero-eyebrow"></span>
     <h1 class="hero-title">Brainwaves & Coffee</h1>
     <p class="hero-tagline">
       A curious person's corner of the web — thoughts, experiments, and 2am rabbit holes.
@@ -39,7 +39,8 @@ const recentProjects = allProjects
               description={post.data.description}
               date={post.data.date}
               tags={post.data.tags}
-              href={`/blog/${post.slug}`}
+              image={post.data.image}
+              href={`/blog/${post.id}`}
             />
           ))}
         </div>
@@ -59,7 +60,8 @@ const recentProjects = allProjects
               description={project.data.description}
               date={project.data.date}
               tags={project.data.tags}
-              href={`/projects/${project.slug}`}
+              image={project.data.image}
+              href={`/projects/${project.id}`}
               link={project.data.link}
             />
           ))}
