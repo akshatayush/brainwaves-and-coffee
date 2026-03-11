@@ -1,11 +1,12 @@
 ---
+import './project.css';
 import { getCollection, render } from 'astro:content';
 import Post from '../../layouts/Post.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
   return projects.map(project => ({
-    params: { slug: project.id },
+    params: { id: project.id },
     props: { project },
   }));
 }
@@ -23,13 +24,7 @@ const { Content } = await render(project);
   backLabel="Back to Projects"
   heroImage={project.data.heroImage}
   heroCaption={project.data.heroCaption}
+  link={project.data.link}
 >
   <Content />
-  {project.data.link && (
-    <p style="margin-top: 2rem;">
-      <a href={project.data.link} target="_blank" rel="noopener noreferrer" class="project-link">
-        View on GitHub ↗
-      </a>
-    </p>
-  )}
 </Post>
