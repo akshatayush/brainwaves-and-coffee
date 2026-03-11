@@ -12,8 +12,8 @@ const [posts, projects] = await Promise.all([
   getCollection('projects'),
 ]);
 const searchItems = [
-  ...posts.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/blog/${p.slug}`, type: 'post' as const })),
-  ...projects.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/projects/${p.slug}`, type: 'project' as const })),
+  ...posts.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/blog/${p.id}`, type: 'post' as const })),
+  ...projects.map(p => ({ title: p.data.title, description: p.data.description, tags: p.data.tags ?? [], href: `/projects/${p.id}`, type: 'project' as const })),
 ];
 
 interface Props {

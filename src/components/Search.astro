@@ -36,7 +36,7 @@ const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
   </div>
 </div>
 
-<script define:vars={{ items }}>
+<script is:inline define:vars={{ items }}>
   const modal = document.getElementById('search-modal');
   const backdrop = document.getElementById('search-backdrop');
   const input = document.getElementById('search-input');
