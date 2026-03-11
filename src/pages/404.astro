@@ -1,0 +1,21 @@
+---
+import './404.css';
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Page Not Found" description="This page doesn't exist.">
+  <div class="four-oh-four">
+    <div class="four-oh-four-code">404</div>
+    <h1>This page wandered off</h1>
+    <p>
+      Maybe it went looking for better coffee. Either way, there's nothing here — but there's plenty back home.
+    </p>
+    <a href="/" class="four-oh-four-link">
+      Back to home
+    </a>
+    <svg class="four-oh-four-bean" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+      <ellipse cx="12" cy="12" rx="7" ry="10" />
+      <path d="M12 2C12 2 9 7 9 12s3 10 3 10" />
+    </svg>
+  </div>
+</Base>

@@ -1,0 +1,52 @@
+.four-oh-four {
+  text-align: center;
+  padding: 6rem 1.5rem 5rem;
+  max-width: var(--max-content);
+  margin: 0 auto;
+}
+
+.four-oh-four-code {
+  font-family: var(--font-heading);
+  font-size: clamp(4rem, 3rem + 5vw, 7rem);
+  color: var(--latte);
+  line-height: 1;
+  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.four-oh-four h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.four-oh-four p {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto 2rem;
+}
+
+.four-oh-four-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--roast);
+  text-decoration: none;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--roast) 25%, transparent);
+  border-radius: 20px;
+  transition: background var(--transition), color var(--transition);
+}
+.four-oh-four-link:hover {
+  background: color-mix(in srgb, var(--roast) 10%, transparent);
+  text-decoration: none;
+}
+
+.four-oh-four-bean {
+  display: block;
+  margin: 2.5rem auto 0;
+  color: var(--latte);
+  opacity: 0.5;
+}
