@@ -1,7 +1,11 @@
 ---
+import './Post.css';
+import 'katex/dist/katex.min.css';
 import Base from './Base.astro';
+import ShareButtons from '../components/ShareButtons.astro';
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { formatDate } from '../utils/formatDate';
 
 interface Props {
   title: string;
@@ -12,6 +16,10 @@ interface Props {
   backLabel: string;
   heroImage?: ImageMetadata;
   heroCaption?: string;
+  readingTime?: string;
+  prevPost?: { title: string; href: string };
+  nextPost?: { title: string; href: string };
+  link?: string;
 }
 
 const {
@@ -23,23 +31,40 @@ const {
   backLabel,
   heroImage,
   heroCaption,
+  readingTime,
+  prevPost,
+  nextPost,
+  link,
 } = Astro.props;
 
-const formattedDate = date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+const formattedDate = formatDate(date);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  author: {
+    '@type': 'Person',
+    name: 'Akshat Ayush',
+  },
+  url: pageUrl,
+};
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} type="article" jsonLd={jsonLd}>
+  <div class="reading-progress" aria-hidden="true"></div>
+
   <div class="content-wrapper">
-    <a href={backHref} class="post-back">← {backLabel}</a>
+    <a href={backHref} class="post-back">&larr; {backLabel}</a>
 
     <header class="post-header">
       <h1>{title}</h1>
       <div class="post-meta">
         <span>{formattedDate}</span>
+        {readingTime && <span class="post-reading-time">{readingTime}</span>}
         {tags.length > 0 && (
           <div class="post-card-tags">
             {tags.map(tag => <span class="tag" data-search-tag={tag}>{tag}</span>)}
@@ -63,5 +88,74 @@ const formattedDate = date.toLocaleDateString('en-US', {
     <div class="post-content">
       <slot />
     </div>
+
+    {link && (
+      <p style="margin-top: 2rem;">
+        <a href={link} target="_blank" rel="noopener noreferrer" class="project-link">
+          View on GitHub &#8599;
+        </a>
+      </p>
+    )}
+
+    <ShareButtons title={title} url={pageUrl} description={description} />
+
+    {(prevPost || nextPost) && (
+      <nav class="post-nav" aria-label="Post navigation">
+        {prevPost ? (
+          <a href={prevPost.href} class="post-nav-link post-nav-prev">
+            <span class="post-nav-label">&larr; Previous</span>
+            <span class="post-nav-title">{prevPost.title}</span>
+          </a>
+        ) : <span />}
+        {nextPost ? (
+          <a href={nextPost.href} class="post-nav-link post-nav-next">
+            <span class="post-nav-label">Next &rarr;</span>
+            <span class="post-nav-title">{nextPost.title}</span>
+          </a>
+        ) : <span />}
+      </nav>
+    )}
   </div>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      // Code copy buttons
+      document.querySelectorAll('.post-content pre').forEach(pre => {
+        if (pre.querySelector('.code-copy-btn')) return; // already injected
+        const btn = document.createElement('button');
+        btn.className = 'code-copy-btn';
+        btn.textContent = 'Copy';
+        btn.addEventListener('click', async () => {
+          const code = pre.querySelector('code');
+          if (code) {
+            await navigator.clipboard.writeText(code.textContent ?? '');
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+          }
+        });
+        (pre as HTMLElement).style.position = 'relative';
+        pre.appendChild(btn);
+      });
+
+      // Reading progress bar
+      const bar = document.querySelector('.reading-progress') as HTMLElement;
+      const content = document.querySelector('.post-content') as HTMLElement;
+      if (bar && content) {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) {
+          bar.style.display = 'none';
+        } else {
+          function updateProgress() {
+            const rect = content.getBoundingClientRect();
+            const total = content.offsetHeight;
+            const scrolled = Math.max(0, -rect.top);
+            const pct = Math.min(100, (scrolled / total) * 100);
+            bar.style.width = `${pct}%`;
+          }
+          window.addEventListener('scroll', updateProgress, { passive: true });
+          updateProgress();
+        }
+      }
+    });
+  </script>
 </Base>

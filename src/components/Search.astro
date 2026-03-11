@@ -1,4 +1,6 @@
 ---
+import './Search.css';
+
 interface SearchItem {
   title: string;
   description: string;
@@ -23,7 +25,7 @@ const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
       <input id="search-input" type="search" placeholder="Search posts and projects…" autocomplete="off" spellcheck="false" />
-      <button id="search-close" class="search-close" aria-label="Close search">✕</button>
+      <button id="search-close" class="search-close" aria-label="Close search">&#x2715;</button>
     </div>
     {allTags.length > 0 && (
       <div class="search-tag-filters" id="search-tag-filters">
@@ -33,130 +35,232 @@ const allTags = [...new Set(items.flatMap(i => i.tags))].sort();
       </div>
     )}
     <div id="search-results" class="search-results"></div>
+    <div id="search-status" class="sr-only" aria-live="polite"></div>
   </div>
 </div>
 
 <script is:inline define:vars={{ items }}>
-  const modal = document.getElementById('search-modal');
-  const backdrop = document.getElementById('search-backdrop');
-  const input = document.getElementById('search-input');
-  const closeBtn = document.getElementById('search-close');
-  const resultsEl = document.getElementById('search-results');
-  const tagFiltersEl = document.getElementById('search-tag-filters');
+  // Guard: only bind document-level listeners once
+  if (!window.__searchInitialized) {
+    window.__searchInitialized = true;
 
-  let activeTags = new Set();
+    let activeTags = new Set();
+    let activeIndex = -1;
 
-  function openModal(preTag) {
-    if (preTag) {
-      activeTags = new Set([preTag]);
-      updateTagButtons();
-    }
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => input.focus(), 50);
-    render();
-  }
-
-  function closeModal() {
-    modal.hidden = true;
-    document.body.style.overflow = '';
-    input.value = '';
-    activeTags = new Set();
-    updateTagButtons();
-  }
-
-  function updateTagButtons() {
-    if (!tagFiltersEl) return;
-    tagFiltersEl.querySelectorAll('.search-tag-btn').forEach(btn => {
-      btn.classList.toggle('active', activeTags.has(btn.dataset.filterTag));
-    });
-  }
-
-  function matches(item, query) {
-    const tagMatch = [...activeTags].every(t => item.tags.includes(t));
-    if (!tagMatch) return false;
-    if (!query) return true;
-    const haystack = (item.title + ' ' + item.description).toLowerCase();
-    const queryWords = query.toLowerCase().split(/\s+/).filter(Boolean);
-    // Use starts-with word boundary check for partial matching
-    return queryWords.every(w => {
-      const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return new RegExp(`\\b${escaped}`).test(haystack);
-    });
-  }
-
-  function render() {
-    const query = input.value.trim();
-    const filtered = items.filter(item => matches(item, query));
-
-    if (filtered.length === 0) {
-      resultsEl.innerHTML = '<p class="search-empty">No results found.</p>';
-      return;
+    // Re-query DOM elements (they change on client-side navigation)
+    function els() {
+      return {
+        modal: document.getElementById('search-modal'),
+        input: document.getElementById('search-input'),
+        resultsEl: document.getElementById('search-results'),
+        tagFiltersEl: document.getElementById('search-tag-filters'),
+        statusEl: document.getElementById('search-status'),
+      };
     }
 
-    resultsEl.innerHTML = filtered.map(item => `
-      <a href="${item.href}" class="search-result-item">
-        <div class="search-result-meta">
-          <span class="search-result-type">${item.type === 'post' ? 'Post' : 'Project'}</span>
-          ${item.tags.map(t => `<span class="tag" data-search-tag="${t}">${t}</span>`).join('')}
-        </div>
-        <div class="search-result-title">${item.title}</div>
-        <div class="search-result-desc">${item.description}</div>
-      </a>
-    `).join('');
-  }
-
-  // Open from Nav or other triggers
-  document.addEventListener('open-search', (e) => {
-    const tag = e.detail?.tag ?? null;
-    if (!modal.hidden && tag) {
-      // Already open — just toggle the tag
-      if (activeTags.has(tag)) {
-        activeTags.delete(tag);
-      } else {
-        activeTags.add(tag);
+    function openModal(preTag) {
+      const { modal, input } = els();
+      if (preTag) {
+        activeTags = new Set([preTag]);
+        updateTagButtons();
       }
-      updateTagButtons();
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+      activeIndex = -1;
+      setTimeout(() => input.focus(), 50);
       render();
-    } else {
-      openModal(tag);
     }
-  });
 
-  // Intercept tag clicks on PostCards (delegated)
-  document.addEventListener('click', (e) => {
-    const tagEl = e.target.closest('[data-search-tag]');
-    if (tagEl) {
-      e.preventDefault();
-      e.stopPropagation();
-      document.dispatchEvent(new CustomEvent('open-search', { detail: { tag: tagEl.dataset.searchTag } }));
+    function closeModal() {
+      const { modal, input } = els();
+      modal.hidden = true;
+      document.body.style.overflow = '';
+      input.value = '';
+      activeTags = new Set();
+      activeIndex = -1;
+      updateTagButtons();
     }
-  }, true); // capture phase so we beat the <a> link
 
-  // Close triggers
-  closeBtn.addEventListener('click', closeModal);
-  backdrop.addEventListener('click', closeModal);
-
-  document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      if (modal.hidden) openModal(null);
-      else closeModal();
+    function updateTagButtons() {
+      const { tagFiltersEl } = els();
+      if (!tagFiltersEl) return;
+      tagFiltersEl.querySelectorAll('.search-tag-btn').forEach(function(btn) {
+        btn.classList.toggle('active', activeTags.has(btn.dataset.filterTag));
+      });
     }
-    if (e.key === 'Escape' && !modal.hidden) {
-      closeModal();
+
+    function matches(item, query) {
+      var tagMatch = [...activeTags].every(function(t) { return item.tags.includes(t); });
+      if (!tagMatch) return false;
+      if (!query) return true;
+      var haystack = (item.title + ' ' + item.description).toLowerCase();
+      var queryWords = query.toLowerCase().split(/\s+/).filter(Boolean);
+      return queryWords.every(function(w) {
+        var escaped = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp('\\b' + escaped).test(haystack);
+      });
     }
-  });
 
-  // Search input
-  input.addEventListener('input', render);
+    function getResultItems() {
+      return els().resultsEl.querySelectorAll('.search-result-item');
+    }
 
-  // Tag filter buttons
-  if (tagFiltersEl) {
-    tagFiltersEl.addEventListener('click', (e) => {
-      const btn = e.target.closest('.search-tag-btn');
+    function updateActiveHighlight() {
+      var items = getResultItems();
+      items.forEach(function(el, i) {
+        el.classList.toggle('search-result-active', i === activeIndex);
+      });
+    }
+
+    function createResultItem(item) {
+      var a = document.createElement('a');
+      a.href = item.href;
+      a.className = 'search-result-item';
+
+      var meta = document.createElement('div');
+      meta.className = 'search-result-meta';
+      var type = document.createElement('span');
+      type.className = 'search-result-type';
+      type.textContent = item.type === 'post' ? 'Post' : 'Project';
+      meta.appendChild(type);
+      item.tags.forEach(function(t) {
+        var tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.dataset.searchTag = t;
+        tag.textContent = t;
+        meta.appendChild(tag);
+      });
+      a.appendChild(meta);
+
+      var title = document.createElement('div');
+      title.className = 'search-result-title';
+      title.textContent = item.title;
+      a.appendChild(title);
+
+      var desc = document.createElement('div');
+      desc.className = 'search-result-desc';
+      desc.textContent = item.description;
+      a.appendChild(desc);
+
+      return a;
+    }
+
+    function render() {
+      var { resultsEl, statusEl } = els();
+      var query = els().input.value.trim();
+      var filtered = items.filter(function(item) { return matches(item, query); });
+      activeIndex = -1;
+
+      resultsEl.innerHTML = '';
+
+      if (filtered.length === 0) {
+        var empty = document.createElement('p');
+        empty.className = 'search-empty';
+        empty.textContent = 'No results found.';
+        resultsEl.appendChild(empty);
+        statusEl.textContent = 'No results found';
+        return;
+      }
+
+      var frag = document.createDocumentFragment();
+      filtered.forEach(function(item) { frag.appendChild(createResultItem(item)); });
+      resultsEl.appendChild(frag);
+
+      statusEl.textContent = filtered.length + ' result' + (filtered.length === 1 ? '' : 's') + ' found';
+    }
+
+    // Open from Nav or other triggers
+    document.addEventListener('open-search', function(e) {
+      var tag = e.detail?.tag ?? null;
+      var { modal } = els();
+      if (!modal.hidden && tag) {
+        if (activeTags.has(tag)) {
+          activeTags.delete(tag);
+        } else {
+          activeTags.add(tag);
+        }
+        updateTagButtons();
+        render();
+      } else {
+        openModal(tag);
+      }
+    });
+
+    // Intercept tag clicks on PostCards (delegated)
+    document.addEventListener('click', function(e) {
+      var tagEl = e.target.closest('[data-search-tag]');
+      if (tagEl) {
+        e.preventDefault();
+        e.stopPropagation();
+        document.dispatchEvent(new CustomEvent('open-search', { detail: { tag: tagEl.dataset.searchTag } }));
+      }
+    }, true);
+
+    // Close triggers (delegated via document to survive DOM swaps)
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('#search-close') || e.target.closest('#search-backdrop')) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        var { modal } = els();
+        if (modal.hidden) openModal(null);
+        else closeModal();
+        return;
+      }
+      if (e.key === 'Escape' && !els().modal.hidden) {
+        closeModal();
+        return;
+      }
+
+      // Keyboard navigation within search
+      if (els().modal.hidden) return;
+
+      var resultItems = getResultItems();
+      if (resultItems.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, resultItems.length - 1);
+        updateActiveHighlight();
+        resultItems[activeIndex]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, -1);
+        updateActiveHighlight();
+        if (activeIndex === -1) els().input.focus();
+        else resultItems[activeIndex]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter' && activeIndex >= 0) {
+        e.preventDefault();
+        resultItems[activeIndex]?.click();
+      } else if (e.key === 'Tab') {
+        var { modal } = els();
+        var focusable = modal.querySelectorAll('input, button, a[href]');
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    // Search input (delegated)
+    document.addEventListener('input', function(e) {
+      if (e.target.id === 'search-input') render();
+    });
+
+    // Tag filter buttons (delegated)
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.search-tag-btn');
       if (!btn) return;
-      const tag = btn.dataset.filterTag;
+      var tag = btn.dataset.filterTag;
       if (activeTags.has(tag)) {
         activeTags.delete(tag);
       } else {

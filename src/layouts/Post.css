@@ -1,0 +1,302 @@
+/* ---- Post prose ---- */
+.post-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--cream);
+}
+
+.post-header h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  flex-wrap: wrap;
+}
+
+.post-content {
+  line-height: 1.8;
+  max-width: 65ch;
+  hanging-punctuation: first last;
+}
+
+.post-content > :first-child {
+  margin-top: 0;
+}
+
+.post-content a {
+  text-decoration-thickness: 1px;
+}
+
+.post-hero-media {
+  margin: 0 0 2.25rem;
+}
+
+.post-hero-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow);
+}
+
+.post-hero-media figcaption {
+  margin-top: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.post-content h2 { margin: 2rem 0 0.75rem; font-size: 1.5rem; }
+.post-content h3 { margin: 1.75rem 0 0.6rem; }
+.post-content p  { margin-bottom: 1.4em; }
+
+.post-content img {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow);
+  cursor: zoom-in;
+}
+
+.post-content figure {
+  margin: 1.9rem 0;
+}
+
+.post-content figcaption {
+  margin-top: 0.7rem;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.post-content ul,
+.post-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.4em;
+}
+.post-content li { margin-bottom: 0.3em; }
+
+.post-content blockquote {
+  border-left: 3px solid var(--latte);
+  margin-left: 0;
+  padding: 0.5rem 0 0.5rem 1.25rem;
+  color: var(--text-muted);
+  font-style: italic;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--latte) 14%, transparent), transparent 45%);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.post-content code {
+  font-size: 0.85em;
+  background: var(--cream);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  color: var(--espresso);
+}
+
+.post-content pre {
+  background: var(--cream);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1.4em;
+  position: relative;
+}
+.post-content pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Code block language label */
+.post-content pre[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0.5rem;
+  right: 0.6rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  opacity: 0.6;
+  font-family: var(--font-body);
+  pointer-events: none;
+}
+
+/* Code copy button */
+.code-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: color-mix(in srgb, var(--parchment) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--roast) 12%, transparent);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, background 150ms ease;
+}
+.post-content pre:hover .code-copy-btn {
+  opacity: 1;
+}
+.code-copy-btn:hover {
+  background: var(--parchment);
+  color: var(--roast);
+}
+
+/* When language label exists, push copy button down */
+.post-content pre[data-language] .code-copy-btn {
+  top: 1.8rem;
+}
+
+.post-content hr {
+  margin: 2.2rem 0;
+}
+
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.7rem 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.post-content th,
+.post-content td {
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+  border-bottom: 1px solid color-mix(in srgb, var(--roast) 12%, transparent);
+}
+
+.post-content th {
+  background: color-mix(in srgb, var(--cream) 75%, white);
+  color: var(--espresso);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.post-content tr:last-child td {
+  border-bottom: 0;
+}
+
+.post-content :where(.katex-display) {
+  margin: 1.75rem 0;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  background: color-mix(in srgb, var(--cream) 78%, white);
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--roast) 10%, transparent);
+}
+
+.post-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-bottom: 2rem;
+  transition: color var(--transition), gap var(--transition);
+}
+.post-back:hover { color: var(--roast); gap: 0.55rem; text-decoration: none; }
+
+/* ---- Reading time ---- */
+.post-reading-time {
+  color: var(--text-muted);
+}
+.post-reading-time::before {
+  content: '·';
+  margin-right: 0.4rem;
+}
+
+/* ---- Reading progress bar ---- */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: var(--roast);
+  z-index: 101;
+  transition: width 80ms linear;
+  pointer-events: none;
+}
+
+/* ---- Prev / Next navigation ---- */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cream);
+}
+
+.post-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-decoration: none;
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  transition: background var(--transition);
+}
+.post-nav-link:hover {
+  background: var(--cream);
+  text-decoration: none;
+}
+
+.post-nav-next {
+  text-align: right;
+}
+
+.post-nav-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.post-nav-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--espresso);
+  font-weight: 600;
+}
+
+@media (max-width: 500px) {
+  .post-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Project link ---- */
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--roast);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--roast) 25%, transparent);
+  border-radius: 20px;
+  transition: background var(--transition), color var(--transition);
+}
+.project-link:hover {
+  background: color-mix(in srgb, var(--roast) 10%, transparent);
+  text-decoration: none;
+}

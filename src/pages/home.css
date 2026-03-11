@@ -1,0 +1,69 @@
+/* ---- Hero ---- */
+.hero {
+  padding: 5rem 1.5rem 3.5rem;
+  text-align: center;
+  max-width: var(--max-site);
+  margin: 0 auto;
+  animation: fade-up 500ms var(--ease-out) both;
+}
+
+.hero-title {
+  font-size: clamp(2.25rem, 1.25rem + 4vw, 3.75rem);
+  line-height: 1.15;
+  color: var(--espresso);
+  margin-bottom: 1rem;
+}
+
+.hero-tagline {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 480px;
+  margin: 0 auto 0;
+}
+
+.hero-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--latte);
+  margin: 2.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* ---- Home sections ---- */
+.home-sections {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+/* ---- Section header ---- */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--latte);
+  font-weight: 600;
+}
+
+.view-all {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .hero-title { font-size: 2.4rem; }
+  .hero { padding: 3.5rem 1.25rem 2.5rem; }
+}
