@@ -1,11 +1,14 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Search from '../components/Search.astro';
 import CoffeeDecorations from '../components/CoffeeDecorations.astro';
+import BackToTop from '../components/BackToTop.astro';
+import Lightbox from '../components/Lightbox.astro';
 import '../styles/global.css';
-import 'katex/dist/katex.min.css';
 import { getCollection } from 'astro:content';
+import { SITE_NAME, SITE_DESCRIPTION } from '../consts';
 
 const [posts, projects] = await Promise.all([
   getCollection('blog'),
@@ -19,15 +22,31 @@ const searchItems = [
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  jsonLd?: Record<string, unknown>;
 }
 
 const {
-  title = 'Brainwaves & Coffee',
-  description = 'A curious person\'s corner of the web — thoughts, projects, and rabbit holes.',
+  title = SITE_NAME,
+  description = SITE_DESCRIPTION,
+  image = '/og-default.svg',
+  type = 'website',
+  jsonLd,
 } = Astro.props;
 
-const fullTitle =
-  title === 'Brainwaves & Coffee' ? title : `${title} — Brainwaves & Coffee`;
+const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const ogImageUrl = new URL(image, Astro.site).href;
+
+const defaultJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: Astro.site?.href,
+  description: SITE_DESCRIPTION,
+};
+const structuredData = jsonLd ?? defaultJsonLd;
 ---
 
 <!DOCTYPE html>
@@ -39,28 +58,63 @@ const fullTitle =
     <link rel="icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
+
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml" title={SITE_NAME} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- JSON-LD -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
       rel="stylesheet"
     />
+
+    <ClientRouter />
+
     <script is:inline>
       (function() {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored ?? (prefersDark ? 'dark' : 'light');
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = stored ?? (prefersDark ? 'dark' : 'light');
         document.documentElement.dataset.theme = theme;
       })();
     </script>
+    <script>
+      // On client-side navigation, skip entry animations to prevent jank
+      // during simultaneous scroll restoration + opacity animations.
+      document.addEventListener('astro:after-swap', () => {
+        document.querySelectorAll('.posts-list').forEach(el => {
+          el.classList.add('no-entry-animation');
+        });
+      });
+    </script>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <CoffeeDecorations />
     <Nav />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <Footer />
     <Search items={searchItems} />
+    <BackToTop />
+    <Lightbox />
   </body>
 </html>
